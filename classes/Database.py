@@ -9,7 +9,7 @@ class Database:
         self.cursor = self.conn.cursor()
         return self.cursor
     
-    def __exit__(self, exc_type):
+    def __exit__(self, exc_type, exc_val, exc_tb):
         if exc_type is None:
             self.conn.commit()
         else:
@@ -17,10 +17,8 @@ class Database:
         self.conn.close()
 
     def drop_table(self, table):
-        with Database(self.db_file) as cursor:
-            cursor.execute(f'DROP TABLE IF EXISTS {table}')
+        self.cursor.execute(f'DROP TABLE IF EXISTS {table}')
 
     def show_databases(self):
-        with Database(self.db_file) as cursor:
-            cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
-            return cursor.fetchall()
+        self.cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
+        return self.cursor.fetchall()
