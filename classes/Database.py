@@ -22,3 +22,6 @@ class Database:
     def show_databases(self):
         self.cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
         return self.cursor.fetchall()
+    def select_all(self,table_name):
+        return self.cursor.execute(f'SELECT * FROM {table_name}')
+        

@@ -10,7 +10,7 @@ class Professores(Database):
         with Database(self.db_file) as cursor:
             cursor.execute(f'CREATE TABLE IF NOT EXISTS {self.nome_tabela} ('
                                 'id_professor INTEGER PRIMARY KEY AUTOINCREMENT,'
-                                'nome_professor varchar(30) NOT NULL);'
+                                'name varchar(30) NOT NULL);'
       
                            )
     def create_professor(self, nome):
