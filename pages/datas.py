@@ -2,7 +2,7 @@ from classes.F_Relatorio import F_Relatorio
 import streamlit as st
 import pandas as pd
 import sqlite3
-
+from datetime import datetime
 db = 'db.sqlite3'
 conn = sqlite3.connect(db)
 
@@ -13,6 +13,8 @@ st.header('Professor')
 professor = st.selectbox('Professores', df_professor['name'], label_visibility='collapsed')
 id_professor = df_professor.loc[df_professor['name'] == professor, 'id_professor'].values[0] #type: ignore
 
+print(id_professor)
+
 #Dataframes tabelas alunos
 alunos = pd.read_sql('SELECT * FROM Alunos',conn)
 alunos_name = alunos['name']
@@ -20,9 +22,6 @@ alunos_name = alunos['name']
 #Dataframes tabelas contratos
 df_contratos = pd.read_sql('Select * from Contratos', conn)
 contratos_nomes = df_contratos['contrato']
-
-
-
 
 
 #Informações do aluno
@@ -52,9 +51,24 @@ st.subheader(f'Valor devido R${valor_devido:.2f}')
 
 if st.button('Matricular'):
     professor = F_Relatorio(db)
-    professor.insert_datas(data= data, id_professor= id_professor, id_aluno= id_aluno,id_contrato=id_contrato, x_semana= x_semana, percentual= percentual, valor= valor, valor_devido= valor_devido, desconto= valor_desconto)
+    professor.insert_datas(data, int(id_professor),  int(id_aluno) ,int(id_contrato), qtd_semana, percentual, int(valor), float(valor_desconto), float(valor_devido))
 #df_frelatorio = pd.read_sql(f'Select * from F_Relatorio where id_professor = {id_professor}', conn)
 
-st.markdown(f'{data, id_professor,  id_aluno ,id_contrato, x_semana, percentual, valor, valor_devido, valor_desconto}')
+st.markdown(f'{data, id_professor,  id_aluno ,id_contrato, qtd_semana, percentual, valor, valor_devido, valor_desconto}')
 
-st.dataframe(pd.read_sql('Select * from F_Relatorio',conn))
+query = f"""Select f.data,
+            a.name as Nome,
+            c.contrato as Contrato,
+            c.x_semana as Vezes_semana,
+            f.percentual as Percentual,
+            c.valor as Valor,
+            f.desconto as Desconto,
+            f.valor_devido as Valor_Devido
+            from F_Relatorio f
+            INNER JOIN Alunos a ON f.id_aluno = a.id
+            INNER JOIN Contratos c ON f.id_contrato = c.id_contrato
+            WHERE f.id_professor = '{id_professor}';
+
+
+"""
+st.dataframe(pd.read_sql(query,conn))

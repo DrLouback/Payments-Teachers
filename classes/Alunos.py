@@ -11,8 +11,8 @@ class Alunos(Database):
         with Database(self.db_file) as cursor:
             cursor.execute(f'CREATE TABLE IF NOT EXISTS {self.nome_tabela} '
                            '('
-                           'id INTEGER PRIMARY KEY AUTOINCREMENT,'
-                           'name varchar(50),'
+                           'id_aluno INTEGER PRIMARY KEY AUTOINCREMENT,'
+                           'name varchar(50) NOT NULL,'
                            'contrato varchar (50));'
                         
                            )
@@ -21,8 +21,8 @@ class Alunos(Database):
         with Database(self.db_file) as cursor:
             cursor.execute(f'insert into {self.nome_tabela} (name, contrato) values (?,?)',(nome, contrato))
     
-    def get_user(self, id):
+    def get_user(self, id_aluno):
         with Database(self.db_file) as cursor:
-            cursor.execute(f'select * from {self.nome_tabela} where id = (?)',(id))
+            cursor.execute(f'select * from {self.nome_tabela} where id_aluno = (?)',(id_aluno))
             return cursor.fetchone()
 

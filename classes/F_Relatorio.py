@@ -9,9 +9,9 @@ class F_Relatorio(Database):
     def __create_table__(self):
         with Database(self.db_file) as cursor:
             cursor.execute(f'CREATE TABLE IF NOT EXISTS {self.nome_tabela} ('
-                            'data DATE,'
+                            'data ,'
                             'id_professor INTEGER,'
-                            'id_aluno INTEGER,'
+                            'id_aluno INTEGER UNIQUE,'
                             'id_contrato INTEGER,'
                             'x_semana INTEGER NOT NULL,'
                             'percentual INTEGER NOT NULL,'
@@ -28,4 +28,4 @@ class F_Relatorio(Database):
 
 if __name__ == '__main__':
     report = F_Relatorio('db.sqlite3')
-    
+    report.insert_datas((2024, 9, 17), 3, 1, 1, 2, 60, 425, 255.0, 0)
