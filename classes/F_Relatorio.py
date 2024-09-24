@@ -4,14 +4,15 @@ class F_Relatorio(Database):
     def __init__(self,db_file):
         super().__init__(db_file)
         self.nome_tabela = 'F_Relatorio'
+        self.__create_table__()
 
     def __create_table__(self):
         with Database(self.db_file) as cursor:
             cursor.execute(f'CREATE TABLE IF NOT EXISTS {self.nome_tabela} ('
                             'data DATE,'
-                            'id_professor,'
-                            'id_aluno,'
-                            'id_contrato,'
+                            'id_professor INTEGER,'
+                            'id_aluno INTEGER,'
+                            'id_contrato INTEGER,'
                             'x_semana INTEGER NOT NULL,'
                             'percentual INTEGER NOT NULL,'
                             'valor INTEGER NOT NULL,'
@@ -19,7 +20,12 @@ class F_Relatorio(Database):
                             'valor_devido float,'
                             'FOREIGN KEY (id_professor) REFERENCES Professores(id_professor),'
                             'FOREIGN KEY (id_aluno) REFERENCES Alunos(id),'
-                            'FOREIGN KEY (id_contrato) REFERENCES Contratos(id_contrato);')
+                            'FOREIGN KEY (id_contrato) REFERENCES Contratos(id_contrato))')
             
     def insert_datas(self, data,id_professor,id_aluno,id_contrato,x_semana,percentual,valor,desconto,valor_devido):
-        self.cursor.execute(f'INSERT INTO {self.nome_tabela} VALUES (?,?,?,?,?,?,?,?)',(data,id_professor,id_aluno,id_contrato,x_semana,percentual,valor,desconto,valor_devido))
+        with Database(self.db_file) as cursor:
+            cursor.execute(f'INSERT INTO {self.nome_tabela} VALUES (?,?,?,?,?,?,?,?,?)',(data,id_professor,id_aluno,id_contrato,x_semana,percentual,valor,desconto,valor_devido))
+
+if __name__ == '__main__':
+    report = F_Relatorio('db.sqlite3')
+    
