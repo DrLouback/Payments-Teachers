@@ -11,7 +11,7 @@ class F_Relatorio(Database):
             cursor.execute(f'CREATE TABLE IF NOT EXISTS {self.nome_tabela} ('
                             'data ,'
                             'id_professor INTEGER,'
-                            'id_aluno INTEGER UNIQUE,'
+                            'id_aluno INTEGER ,'
                             'id_contrato INTEGER,'
                             'x_semana INTEGER NOT NULL,'
                             'percentual INTEGER NOT NULL,'

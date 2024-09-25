@@ -28,3 +28,8 @@ query = f"""Select f.data as Data,
 
 """
 st.table(pd.read_sql(query,conn))
+
+query_valor_devido = "SELECT SUM(valor_devido) as total FROM F_Relatorio"
+total = pd.read_sql(query_valor_devido, conn).values[0]
+
+st.subheader(f'Valor total: R${total}')
