@@ -53,4 +53,4 @@ total = pd.read_sql(query_valor_devido, conn).values[0]
 for i in total:
     if i is not None:
         i = f'{i:,.2f}'
-        st.subheader(f'Valor total: R${i.replace(',','.')}')
+        st.subheader(f"Valor total: R${i.replace(',','.')}")
