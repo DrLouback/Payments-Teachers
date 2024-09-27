@@ -23,7 +23,7 @@ def matricular():
     professor = st.selectbox('Professores', df_professor['name'], label_visibility='collapsed', index= int(id_professor_view-1))
     id_professor = df_professor.loc[df_professor['name'] == professor, 'id_professor'].values[0] #type: ignore
 
-    print(id_professor)
+    
 
     #Dataframes tabelas alunos
     alunos = pd.read_sql('SELECT * FROM Alunos',conn)
@@ -50,6 +50,7 @@ def matricular():
         st.subheader(contrato_aluno)
         x_semana = df_contratos.loc[df_contratos['id_contrato'] == id_contrato, 'x_semana'].values[0] #type: ignore
         qtd_semana = st.selectbox('Quantidade de aulas por semana', range(1,x_semana+1))
+        
     with col2:
         st.subheader(f'R${valor:.2f}')
         percentual = st.selectbox('Percentual', [35,60,70,100], format_func= lambda x: f'{x}%')
@@ -61,7 +62,8 @@ def matricular():
 
     if st.button('Matricular Aluno'):
         professor = F_Relatorio(db)
-        professor.insert_datas(data, int(id_professor),  int(id_aluno) ,int(id_contrato), qtd_semana, percentual, int(valor), float(valor_desconto), float(valor_devido))
+        print(qtd_semana)
+        professor.insert_datas(data=data, id_professor= int(id_professor), id_aluno= int(id_aluno) ,id_contrato= int(id_contrato), x_semana= qtd_semana, percentual= percentual, valor= int(valor), desconto=  float(valor_desconto), valor_devido= float(valor_devido))
         st.rerun()
         return True
     
@@ -70,7 +72,7 @@ def view_professor():
     query = f"""Select f.data,
                     a.name as Nome,
                     c.contrato as Contrato,
-                    c.x_semana as Vezes_semana,
+                    f.x_semana as Aulas,
                     f.percentual as Percentual,
                     c.valor as Valor,
                     f.desconto as Desconto,
@@ -82,7 +84,7 @@ def view_professor():
 
 
         """
-    st.dataframe(pd.read_sql(query,conn))
+    st.dataframe(pd.read_sql(query,conn), hide_index= True)
 
 
 if st.button('Matricular'):

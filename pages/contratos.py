@@ -18,9 +18,13 @@ if ok_c:
     contratos.create_contrato(contrato,valor,x_semana)
     
 
-query = 'select * from Contratos'
+query = """select id_contrato as ID,
+            contrato as Contrato,
+             valor as Valor,
+              x_semana as "Aulas por semana"
+                from Contratos"""
 df_c = pd.read_sql(query,conn)
-name_contrato = df_c['contrato']
+name_contrato = df_c['Contrato']
 
 st.dataframe(df_c, hide_index= True)
 

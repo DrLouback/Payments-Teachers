@@ -16,6 +16,8 @@ if ok:
     professor = Professores(db_file)
     professor.create_professor(nome)
 
-query = 'Select * from Professores'
+query = """Select id_professor as ID,
+            name as Nome
+        from Professores"""
 df = pandas.read_sql(query, conn)
 st.dataframe(df, hide_index=True)

@@ -16,8 +16,8 @@ class F_Relatorio(Database):
                             'x_semana INTEGER NOT NULL,'
                             'percentual INTEGER NOT NULL,'
                             'valor INTEGER NOT NULL,'
-                            'desconto float,'
-                            'valor_devido float,'
+                            'desconto DECIMAL (10,2),'
+                            'valor_devido DECIMAL (10,2),'
                             'FOREIGN KEY (id_professor) REFERENCES Professores(id_professor),'
                             'FOREIGN KEY (id_aluno) REFERENCES Alunos(id),'
                             'FOREIGN KEY (id_contrato) REFERENCES Contratos(id_contrato))')
