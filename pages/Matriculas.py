@@ -62,7 +62,6 @@ def matricular():
 
     if st.button('Matricular Aluno'):
         professor = F_Relatorio(db)
-        print(qtd_semana)
         professor.insert_datas(data=data, id_professor= int(id_professor), id_aluno= int(id_aluno) ,id_contrato= int(id_contrato), x_semana= qtd_semana, percentual= percentual, valor= int(valor), desconto=  float(valor_desconto), valor_devido= float(valor_devido))
         st.rerun()
         return True
