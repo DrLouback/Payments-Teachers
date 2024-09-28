@@ -17,7 +17,8 @@ class Database:
         self.conn.close()
 
     def drop_table(self, table):
-        self.cursor.execute(f'DROP TABLE IF EXISTS {table}')
+        with Database(self.db_file) as cursor:
+            cursor.execute(f'DROP TABLE IF EXISTS {table}')
 
     def show_databases(self):
         self.cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")

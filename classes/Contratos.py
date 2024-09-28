@@ -10,9 +10,9 @@ class Contratos(Database):
         with Database(self.db_file) as cursor:
             cursor.execute(f'CREATE TABLE IF NOT EXISTS {self.nome_tabela} ('
                            'id_contrato INTEGER PRIMARY KEY AUTOINCREMENT,'
-                           'contrato varchar(50) UNIQUE,'
-                           'valor int,'
-                           'x_semana int);'
+                           'contrato varchar(50) UNIQUE NOT NULL,'
+                           'valor int NOT NULL,'
+                           'x_semana int NOT NULL);'
                            )
     def create_contrato(self,contrato,valor,x_semana):
         with Database(self.db_file) as cursor:
@@ -22,3 +22,8 @@ class Contratos(Database):
         with Database(self.db_file) as cursor:
             cursor.execute(f'Select * from {self.nome_tabela} where id_contrato =  (?) ', (id_contrato))
             return cursor.fetchone()
+    
+    def delete_contrato(self, id_contrato):
+        with Database(self.db_file) as cursor:
+            cursor.execute(f'DROP * FROM {self.nome_tabela} where id_contrato = (?)', (id_contrato))
+    

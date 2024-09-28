@@ -47,7 +47,8 @@ query = f"""Select f.data as Data,
 st.table(pd.read_sql(query,conn))
 
 query_valor_devido = f"""SELECT SUM(valor_devido) as total FROM F_Relatorio
-                        WHERE DATA BETWEEN '{inicio_mes}' AND '{fim_mes}';
+                        WHERE id_professor = '{id_professor}' 
+                        AND DATA BETWEEN '{inicio_mes}' AND '{fim_mes}';
                      """
 total = pd.read_sql(query_valor_devido, conn).values[0]
 for i in total:
