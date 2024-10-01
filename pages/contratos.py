@@ -29,11 +29,14 @@ name_contrato = df_c['Contrato']
 contrato_table = st.dataframe(df_c, hide_index= True, selection_mode= 'single-row', on_select='rerun')
 @st.dialog('Alterar contrato')
 def alterar_contrato(id_contrato: str):
-  def dados_alterados():
-    st.write(st.session_state['mudança'])
-  contrato_selecionado = df_c[df_c['ID'] == id_contrato ]
-  changes = st.data_editor(contrato_selecionado, hide_index= True, on_change= dados_alterados ,disabled, key='mudança' )
- 
+    def dados_alterados():
+      
+      st.write(st.session_state['mudança']['Valor'])
+        
+
+    contrato_selecionado = df_c[df_c['ID'] == id_contrato ]
+    st.data_editor(contrato_selecionado, hide_index= True, on_change= dados_alterados ,disabled =('ID',), key='mudança' )
+  
 
 
 if contrato_table :

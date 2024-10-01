@@ -27,3 +27,10 @@ class Contratos(Database):
         with Database(self.db_file) as cursor:
             cursor.execute(f'DROP * FROM {self.nome_tabela} where id_contrato = (?)', (id_contrato))
     
+    def update_contrato(self, id_contrato, contrato, valor, x_semana):
+        with Database(self.db_file) as cursor:
+            cursor.execute("""  Update Contratos (contrato, valor, x_semana)
+                                SET contrato = ?, valor = ?, x_semana = ?
+                                WHERE id_contrato = ?;
+                                
+                           """)
