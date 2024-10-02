@@ -40,7 +40,8 @@ query = f"""Select f.data as Data,
             from F_Relatorio f
             INNER JOIN Alunos a ON f.id_aluno = a.id
             INNER JOIN Contratos c ON f.id_contrato = c.id_contrato
-            WHERE f.id_professor = '{id_professor}' AND DATA BETWEEN '{inicio_mes}' AND '{fim_mes}';
+            WHERE id_professor = '{id_professor}' 
+            AND DATA BETWEEN '{inicio_mes}' AND '{fim_mes}';
 
 
 """
