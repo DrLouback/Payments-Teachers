@@ -5,9 +5,11 @@ import sqlite3
 from streamlit_extras.mandatory_date_range import date_range_picker
 from datetime import datetime
 import calendar
+from pages.configurações import month_change
+
 
 conn = sqlite3.connect('db.sqlite3')
-
+month_change()
 
 st.title('Bem vindo ao sistema de pagamentos')
 st.header('Escolha o Professor')
@@ -45,9 +47,9 @@ query = f"""Select f.data as Data,
 
 
 """
-st.table(pd.read_sql(query,conn))
+st.table(pd.read_sql(query,conn).drop_duplicates())
 
-query_valor_devido = f"""SELECT SUM(valor_devido) as total FROM F_Relatorio
+query_valor_devido = f"""SELECT SUM(DISTINCT valor_devido) as total FROM F_Relatorio
                         WHERE id_professor = '{id_professor}' 
                         AND DATA BETWEEN '{inicio_mes}' AND '{fim_mes}';
                      """
