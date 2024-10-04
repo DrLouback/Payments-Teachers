@@ -1,10 +1,5 @@
 import streamlit as st
-from datetime import datetime
-import sqlite3
-import pandas as pd
-import calendar
-from classes.F_Relatorio import F_Relatorio
-from classes.logs import Logs
+from functions.month_change import month_change
 
 st.header('Configurações do sistema')
 st.subheader('Atualização automática do mês')
@@ -13,50 +8,7 @@ st.markdown('Deseja forçar atualização?')
 atualizar = st.button('Sim', help= """Irá replicar os dados do último mês
           para o mês atual""")
 
-def month_change():
-
-    conn = sqlite3.connect('db.sqlite3')
-    today = datetime.today()
-    day_one = datetime(year=today.year, month= today.month, day= 1)
-    teste_day= datetime(today.year, month= today.month, day=1)
-    hoje = datetime(year=today.year, month= today.month, day= today.day)
-    df_log = pd.read_sql('Select * from Logs', conn)
-    log_days = df_log['data'].values
-    
-
-    if teste_day == day_one and  str(hoje) not in str(log_days):
-        log_month_change = Logs('db.sqlite3')
-        log_month_change._insert_log(hoje, 'month_change', 'system', 'configuracoes')
-        
-        st.markdown(f'Dados foram atualizados')
-
-        last_month = today.month -1 if today.month >1 else 12
-        ano = today.year if today.month > 1 else today.year - 1
-        end_day_month = calendar.monthrange(year=ano,month=last_month)[1]
-        start_last_month = datetime(year=ano, month= last_month, day=1).date()
-        end_last_month = datetime(year=ano, month=last_month, day= end_day_month).date()
-            
-        conn = sqlite3.connect('db.sqlite3')
-        
-
-        cursor = conn.cursor()
-        cursor.execute(f"""INSERT INTO F_Relatorio (data,id_professor,id_aluno,id_contrato,x_semana,percentual,valor,desconto,valor_devido)
-                            SELECT '{datetime(today.year,month=today.month,day=today.day).strftime('%Y-%m-%d')}',id_professor,id_aluno,id_contrato,x_semana,percentual,valor,desconto,valor_devido
-                            FROM F_Relatorio
-                            WHERE data BETWEEN '{start_last_month}' AND '{end_last_month}';
-                        """)
-        conn.commit()
-        
-        query = f"""Select * from F_Relatorio where data between {start_last_month} AND
-                        {end_last_month}"""
-            
-        dataframe = pd.read_sql(query,conn)
-        st.dataframe(dataframe)
-            
-
-    else:
-        st.markdown('Dados já estão atualizados')
 
 if atualizar:
-    month_change()
+    month_change('Atualizar')
 

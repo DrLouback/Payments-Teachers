@@ -25,7 +25,6 @@ def datas() -> tuple:
     return resultado #type: ignore
     
 inicio_mes, fim_mes = datas()
-
 lista_professores = pd.read_sql('Select * from Professores',conn)
 
 prof_selecionado = st.selectbox('Label',lista_professores['name'],label_visibility='hidden')
