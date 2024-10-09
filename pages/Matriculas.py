@@ -1,8 +1,12 @@
 from classes.F_Relatorio import F_Relatorio
+from classes.Reposicoes import Reposicoes
 import streamlit as st
 import pandas as pd
 import sqlite3
-from datetime import datetime
+import datetime as dt
+import locale
+
+locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
 db = 'db.sqlite3'
 conn = sqlite3.connect(db)
 
@@ -10,6 +14,15 @@ lista_professores = pd.read_sql('Select * from Professores',conn)
 
 prof_selecionado = st.selectbox('Label',lista_professores['name'],label_visibility='hidden')
 id_professor_view = lista_professores.loc[lista_professores['name']== prof_selecionado, 'id_professor'].values[0] #type: ignore
+
+def filtro_mes():
+    relatorio = pd.read_sql('Select data from F_Relatorio', conn)
+    relatorio['data'] = pd.to_datetime(relatorio['data'] )
+    relatorio['mes'] = relatorio['data'].dt.strftime('%B')
+    relatorio['mes'] = [mes.capitalize() for mes in relatorio['mes']]
+    return relatorio['mes']
+
+mes = st.selectbox('Mês', filtro_mes().unique())
 
 
 @st.dialog('Cadastrar Aluno')
@@ -66,6 +79,55 @@ def matricular():
         st.rerun()
         return True
     
+@st.dialog('Lançar Reposição')
+def lançar_reposicao():
+    conn = sqlite3.connect('db.sqlite3')
+    with st.form('Reposição'):
+        st.selectbox('Professor', prof_selecionado)
+        query_aluno = f"""Select 
+                a.name as Nome,
+                a.id as ID
+                from F_Relatorio f
+                INNER JOIN Alunos a ON f.id_aluno = a.id
+                WHERE id_professor = '{id_professor_view}' 
+                ;"""
+        alunos = pd.read_sql(query_aluno,conn)
+        aluno_selecionado = st.selectbox('Aluno', alunos)
+        id_aluno = alunos.loc[alunos['Nome']== aluno_selecionado, 'ID'].values[0]
+        
+        old_date = st.date_input('Dia desmarcado')
+        new_professor = st.selectbox('Professor que repôs', lista_professores['name'])
+        id_new_professor = lista_professores.loc[lista_professores['name'] == new_professor, 'id_professor'].values[0] #type: ignore
+        new_date = st.date_input('Dia remarcado')
+        
+        submitted = st.form_submit_button("Submit")
+        if submitted:
+            reposicao = Reposicoes('db.sqlite3')
+            reposicao.insert_reposicao(int(id_aluno),old_date,int(id_professor_view),new_date,int(id_new_professor),8)
+    query_reposicoes = """Select a.name as Nome,
+                          p.name as Professor_Original,
+                          r.old_date as Data_Original,
+                          p2.name as Professor_Marcado,
+                          r.new_date as Data_Reposição,
+                          valor as Valor
+                          FROM Reposicoes r
+                          INNER JOIN Alunos a ON r.id_aluno = a.id
+                          INNER JOIN Professores p ON r.id_old_professor = p.id_professor
+                          INNER JOIN Professores p2 on r.id_new_professor = p2.id_professor
+                        
+    """    
+    reposicoes = pd.read_sql(query_reposicoes, conn)
+    reposicoes['Data_Reposição'] = pd.to_datetime(reposicoes['Data_Reposição'])
+    reposicoes['mes'] = reposicoes['Data_Reposição'].dt.strftime('%B')
+    reposicoes['mes'] = [mes.capitalize() for mes in reposicoes['mes']]
+    filtro_mes = reposicoes['mes'] == mes
+    reposicoes = reposicoes[filtro_mes]
+    reposicoes['Data_Reposição'] = reposicoes['Data_Reposição']
+    st.dataframe(reposicoes, hide_index= True)
+
+
+#configurando a F_Relatorio para mostrar os meses
+
 
 def view_professor():        
     query = f"""Select f.data,
@@ -83,14 +145,22 @@ def view_professor():
 
 
         """
-    st.dataframe(pd.read_sql(query,conn), hide_index= True)
+    relatorio = pd.read_sql(query,conn)
+    relatorio['mes'] = filtro_mes() 
+    filtro = relatorio['mes'] == mes
+    resultado = relatorio[filtro]
+    st.dataframe(resultado, hide_index= True)
 
+col1, col2 = st.columns([1,1])
+with col1:
+    if st.button('Matricular'):
+        matricula = matricular()
+        if matricula == True:
+            st.rerun()
+with col2:
+    if st.button('Reposição'):
+        reposicao = lançar_reposicao()
 
-if st.button('Matricular'):
-    matricula = matricular()
-    if matricula == True:
-        st.rerun()
-
+filtro_mes()
 view_professor()
 
-    
